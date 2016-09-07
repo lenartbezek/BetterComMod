@@ -56,10 +56,9 @@ namespace ComInfo
         private static readonly Vector3 displayedPos = new Vector3(-0.2f, -4.87f, 0);
         private static readonly Vector3 foldedPos = new Vector3(2.2f, -4.87f, 0);
 
-        private static int blockCount = 0;
-
-        private static void AddMassChangedDelegate(BlockBehaviour bb)
+        private static void AddMassChangedDelegate(Transform block)
         {
+            var bb = block.GetComponent<BlockBehaviour>();
             if (bb.GetBlockID() == (int)BlockType.Ballast)
             {
 #if DEBUG
@@ -67,6 +66,13 @@ namespace ComInfo
 #endif
                 bb.Sliders.Find(x => x.Key == "mass").ValueChanged += (float value) => { updateValues = true; };
             }
+        }
+
+        private static void Awake()
+        {
+            Game.OnBlockPlaced += (Transform block) => { updateValues = true; };
+            Game.OnBlockPlaced += AddMassChangedDelegate;
+            Game.OnBlockRemoved += () => { updateValues = true; };
         }
 
         private void Update()
@@ -118,17 +124,6 @@ namespace ComInfo
                     else
                         StartCoroutine(HidePanel());
                 }
-            }
-
-            // Check for newly placed blocks
-            if (blockCount != ReferenceMaster.BuildingBlocks.Count)
-            {
-                updateValues = true;
-                for (int i = blockCount; i < ReferenceMaster.BuildingBlocks.Count; i++)
-                {
-                    AddMassChangedDelegate(ReferenceMaster.BuildingBlocks[i]);
-                }
-                blockCount = ReferenceMaster.BuildingBlocks.Count;
             }
 
             // Update values
