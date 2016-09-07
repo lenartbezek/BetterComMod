@@ -68,7 +68,7 @@ namespace ComInfo
             }
         }
 
-        private static void Awake()
+        private void Awake()
         {
             Game.OnBlockPlaced += (Transform block) => { updateValues = true; };
             Game.OnBlockPlaced += AddMassChangedDelegate;
@@ -141,7 +141,8 @@ namespace ComInfo
                 AddPiece.Instance.comCode.showCOM = tmp;
 
                 totalMassValue.text = Machine.Active().Mass.ToString("0.00");
-                comValue.text = (AddPiece.Instance.comCode.CoM - Machine.Active().Position).ToString().Trim('(', ')');
+                var pos = AddPiece.Instance.comCode.CoM - Machine.Active().Position;
+                comValue.text = pos.x.ToString("0.00") + ", "+ pos.y.ToString("0.00") + ", " + pos.z.ToString("0.00");
             }
         }
 
@@ -244,8 +245,8 @@ namespace ComInfo
             myText.name = "ComValue";
             myText.transform.localPosition = new Vector3(-0.5f, 3.1f, 1f);
             comValue = myText.GetComponent<TextMesh>();
-            comValue.text = "0.0, 0.0, 0.0";
-            comValue.fontSize = 20;
+            comValue.text = "0.00, 0.00, 0.00";
+            comValue.fontSize = 18;
             comValue.color = Color.white;
         }
 
